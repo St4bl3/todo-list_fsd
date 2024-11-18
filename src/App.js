@@ -14,7 +14,7 @@ function App() {
   };
 
   const addTask = async () => {
-    if (title) {
+    if (title.trim()) {
       const response = await axios.post(`${API_URL}/tasks`, { title });
       setTasks([...tasks, response.data]);
       setTitle("");
@@ -47,7 +47,7 @@ function App() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Add a task"
+          placeholder="What needs to be done?"
         />
         <button onClick={addTask}>Add</button>
       </div>
@@ -58,10 +58,18 @@ function App() {
               {task.title}
             </span>
             <div className="task-buttons">
-              <button onClick={() => toggleTask(task.id, !task.completed)}>
+              <button
+                className="complete-btn"
+                onClick={() => toggleTask(task.id, !task.completed)}
+              >
                 {task.completed ? "Undo" : "Complete"}
               </button>
-              <button onClick={() => deleteTask(task.id)}>Delete</button>
+              <button
+                className="delete-btn"
+                onClick={() => deleteTask(task.id)}
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}
