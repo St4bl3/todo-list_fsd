@@ -7,6 +7,8 @@ const API_URL = "http://localhost:4000";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchTasks = async () => {
     const response = await axios.get(`${API_URL}/tasks`);
@@ -15,9 +17,10 @@ function App() {
 
   const addTask = async () => {
     if (title.trim()) {
-      const response = await axios.post(`${API_URL}/tasks`, { title });
+      const response = await axios.post(`${API_URL}/tasks`, { title, dueDate });
       setTasks([...tasks, response.data]);
       setTitle("");
+      setDueDate("");
     }
   };
 
@@ -35,6 +38,19 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
+  const clearCompleted = async () => {
+    const completedTasks = tasks.filter((task) => task.completed);
+    for (const task of completedTasks) {
+      await deleteTask(task.id);
+    }
+  };
+
+  const searchTasks = (tasks) => {
+    return tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -42,21 +58,46 @@ function App() {
   return (
     <div className="container">
       <h1>To-Do List</h1>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search tasks..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-bar"
+      />
+
+      {/* Task Input */}
       <div className="input-container">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="What needs to be done?"
+          placeholder="Add a new task..."
+        />
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
         />
         <button onClick={addTask}>Add</button>
       </div>
+
+      {/* Task List */}
       <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <span className={`task-title ${task.completed ? "completed" : ""}`}>
-              {task.title}
-            </span>
+        {searchTasks(tasks).map((task) => (
+          <li className="task-card" key={task.id}>
+            <div className="task-details">
+              <span
+                className={`task-title ${task.completed ? "completed" : ""}`}
+              >
+                {task.title}
+              </span>
+              <span className="task-date">
+                {task.dueDate ? `Due: ${task.dueDate}` : ""}
+              </span>
+            </div>
             <div className="task-buttons">
               <button
                 className="complete-btn"
@@ -74,6 +115,11 @@ function App() {
           </li>
         ))}
       </ul>
+
+      {/* Clear Completed Tasks */}
+      <button className="clear-btn" onClick={clearCompleted}>
+        Clear Completed Tasks
+      </button>
     </div>
   );
 }

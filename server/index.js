@@ -10,14 +10,18 @@ app.use(express.json());
 
 // Create a new task
 app.post("/tasks", async (req, res) => {
-  const { title } = req.body;
-  const task = await prisma.task.create({ data: { title } });
+  const { title, dueDate } = req.body;
+  const task = await prisma.task.create({
+    data: { title, dueDate },
+  });
   res.json(task);
 });
 
 // Get all tasks
 app.get("/tasks", async (req, res) => {
-  const tasks = await prisma.task.findMany();
+  const tasks = await prisma.task.findMany({
+    orderBy: { dueDate: "asc" },
+  });
   res.json(tasks);
 });
 

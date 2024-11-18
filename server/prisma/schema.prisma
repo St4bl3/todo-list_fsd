@@ -10,5 +10,6 @@ datasource db {
 model Task {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
+  dueDate   String?
   completed Boolean  @default(false)
 }
