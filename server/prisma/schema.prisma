@@ -12,4 +12,5 @@ model Task {
   title     String
   dueDate   String?
   completed Boolean  @default(false)
+  priority  Int      @default(1) // Priority: 1 (Low), 2 (Medium), 3 (High)
 }

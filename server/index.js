@@ -10,9 +10,9 @@ app.use(express.json());
 
 // Create a new task
 app.post("/tasks", async (req, res) => {
-  const { title, dueDate } = req.body;
+  const { title, dueDate, priority } = req.body;
   const task = await prisma.task.create({
-    data: { title, dueDate },
+    data: { title, dueDate, priority },
   });
   res.json(task);
 });
@@ -20,7 +20,7 @@ app.post("/tasks", async (req, res) => {
 // Get all tasks
 app.get("/tasks", async (req, res) => {
   const tasks = await prisma.task.findMany({
-    orderBy: { dueDate: "asc" },
+    orderBy: [{ priority: "desc" }, { dueDate: "asc" }],
   });
   res.json(tasks);
 });
@@ -28,10 +28,10 @@ app.get("/tasks", async (req, res) => {
 // Update a task
 app.put("/tasks/:id", async (req, res) => {
   const { id } = req.params;
-  const { completed } = req.body;
+  const { completed, priority } = req.body;
   const task = await prisma.task.update({
     where: { id },
-    data: { completed },
+    data: { completed, priority },
   });
   res.json(task);
 });
